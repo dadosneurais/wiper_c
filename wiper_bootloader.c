@@ -1,31 +1,31 @@
 #include <stdio.h>
 #include <windows.h>
 
-void walk(const char *dir) {    // recebe o path do dir
-    WIN32_FIND_DATA fd;         // receive the dir datas
-    char path[MAX_PATH];        // max path value 260 chars
-    HANDLE h;                   // handle to search for findnext
+void walk(const char *dir) {
+    WIN32_FIND_DATA fd;
+    char path[MAX_PATH];
+    HANDLE h;
 
-    sprintf(path, "%s\\*", dir);    // create the complete path
+    sprintf(path, "%s\\*", dir);
 
-    if ((h = FindFirstFile(path, &fd)) == INVALID_HANDLE_VALUE) // verify if its a valid path
+    if ((h = FindFirstFile(path, &fd)) == INVALID_HANDLE_VALUE)
         return;
 
     do {
-        if (!lstrcmp(fd.cFileName, ".") || !lstrcmp(fd.cFileName, ".."))    // if . or .. jump, avoid infinit loop
+        if (!lstrcmp(fd.cFileName, ".") || !lstrcmp(fd.cFileName, ".."))
             continue;
 
-        sprintf(path, "%s\\%s", dir, fd.cFileName); // create the path + file name
+        sprintf(path, "%s\\%s", dir, fd.cFileName);
 
-        if (fd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {   // verify if its a dir or a file
-            walk(path); // if its a dir, walk
+        if (fd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
+            walk(path);
         } else {
-            DeleteFileA(path);  // if its a file, delete
+            DeleteFileA(path);
         }
 
-    } while (FindNextFile(h, &fd)); // while exist files into the dirs
+    } while (FindNextFile(h, &fd));
 
-    FindClose(h);   // close
+    FindClose(h);
 }
 
 int main() {
